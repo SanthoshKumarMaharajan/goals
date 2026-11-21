@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#050914">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="XUV 2027">
+<title>XUV 2027 Savings Tracker</title>
+<style>
+:root{--bg:#050914;--card:#0e1730;--line:#26335c;--gold:#d4af37;--gold2:#f6e08a;--text:#eef1fa;--mut:#8f9bbd;--ok:#3ddc97}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);
+  padding:max(14px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) max(30px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left));line-height:1.45}
+.wrap{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+h1{font-size:1.15rem;letter-spacing:.12em;color:var(--gold2);text-align:center;padding-top:6px}
+h1 small{display:block;color:var(--mut);font-size:.72rem;letter-spacing:.06em;font-weight:400}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px}
+.card h2{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.cd{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center}
+.cd div{background:#0a1228;border-radius:12px;padding:10px 0}
+.cd b{display:block;font-size:1.6rem;color:var(--gold2);font-variant-numeric:tabular-nums}
+.cd span{font-size:.65rem;color:var(--mut);text-transform:uppercase;letter-spacing:.1em}
+.big{font-size:2rem;font-weight:700;color:var(--gold2)}
+.big small{font-size:.9rem;color:var(--mut);font-weight:400}
+.bar{height:12px;background:#1a2547;border-radius:99px;overflow:hidden;margin:10px 0 6px}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#a8841c,var(--gold2));border-radius:99px;transition:width .8s}
+.row{display:flex;justify-content:space-between;gap:10px;color:var(--mut);font-size:.88rem}
+.row b{color:var(--text)}
+.badge{display:none;margin-top:10px;padding:10px;border-radius:12px;background:rgba(61,220,151,.15);border:1px solid var(--ok);color:var(--ok);text-align:center;font-weight:700}
+button{font:600 .95rem inherit;font-family:inherit;border:0;border-radius:12px;padding:12px 16px;min-height:46px;cursor:pointer;color:#1a1405;background:linear-gradient(135deg,var(--gold2),var(--gold))}
+button.ghost{background:#1a2547;color:var(--text)}
+button.done{background:var(--ok);color:#052517}
+button.full{width:100%}
+input[type=number],input[type=text]{width:100%;background:#0a1228;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:10px;font-size:16px;outline:none}
+input:focus{border-color:var(--gold)}
+.msg{margin:8px 0 12px;color:#cfd6ee;font-size:.92rem;border-left:3px solid var(--gold);padding-left:10px}
+.dep{display:flex;gap:8px;margin-top:12px}
+.dep input:first-child{max-width:130px}
+.m{display:grid;grid-template-columns:30px 1fr 112px;gap:10px;align-items:center;padding:8px 0;border-top:1px solid #1a2547}
+.m:first-of-type{border-top:0}
+.m input[type=checkbox]{width:26px;height:26px;accent-color:var(--ok)}
+.m.done .n{color:var(--ok)}
+.n small{display:block;color:var(--mut);font-size:.7rem}
+.x{display:grid;grid-template-columns:1fr 112px;gap:10px;align-items:center;padding:8px 0}
+.x+ .x{border-top:1px solid #1a2547}
+.x small{display:block;color:var(--mut);font-size:.72rem}
+ul{list-style:none}
+li{display:flex;gap:8px;justify-content:space-between;align-items:center;padding:7px 0;border-top:1px solid #1a2547;font-size:.88rem}
+li:first-child{border-top:0}
+li b{color:var(--ok)}
+li button{padding:2px 10px;min-height:30px;background:#1a2547;color:var(--mut)}
+.tools{display:flex;flex-wrap:wrap;gap:8px}
+.tools button{flex:1}
+.hint{color:var(--mut);font-size:.75rem;margin-top:8px}
+.carbox{position:relative;border-radius:18px;border:1px solid var(--line);background:radial-gradient(circle at 50% 80%,#14275f 0%,#0a1230 55%,#050914 100%);overflow:hidden;aspect-ratio:16/8}
+.car{width:100%;height:100%;display:block;animation:fl 5s ease-in-out infinite}
+@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+#carPhoto{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.tbl{width:100%;border-collapse:collapse;font-size:.85rem}
+.tbl th{color:var(--gold);text-align:left;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;padding:6px 4px;border-bottom:1px solid var(--line)}
+.tbl td{padding:8px 4px;border-bottom:1px solid #1a2547;vertical-align:middle}
+.tbl td.r,.tbl th.r{text-align:right}
+.tbl tfoot td{font-weight:700;color:var(--gold2);border-bottom:0}
+.tbl button{padding:2px 10px;min-height:30px;background:#2a1a24;color:#ff9aa8}
+.tw{overflow-x:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>PROJECT XUV 2027<small>Mahindra XUV 3XO AX5 · Savings Tracker</small></h1>
+
+  <div class="carbox">
+    <svg class="car" viewBox="0 0 640 270" role="img" aria-label="Navy blue SUV with black roof and cladding">
+      <defs>
+        <linearGradient id="cNavy" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#3d5cc4"/><stop offset=".35" stop-color="#1b2f7a"/><stop offset=".8" stop-color="#0c1a4a"/><stop offset="1" stop-color="#070f2d"/>
+        </linearGradient>
+        <linearGradient id="cGlass" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#34456e"/><stop offset="1" stop-color="#0a0f20"/>
+        </linearGradient>
+        <linearGradient id="cRoof" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a2a2e"/><stop offset="1" stop-color="#050506"/></linearGradient>
+        <radialGradient id="cGlow" cx=".5" cy=".6" r=".6"><stop offset="0" stop-color="#2a4cc0" stop-opacity=".45"/><stop offset="1" stop-color="#2a4cc0" stop-opacity="0"/></radialGradient>
+      </defs>
+      <ellipse cx="320" cy="150" rx="300" ry="110" fill="url(#cGlow)"/>
+      <ellipse cx="320" cy="258" rx="290" ry="12" fill="#000" opacity=".6"/>
+      <!-- navy body -->
+      <path d="M44 214 L52 176 Q60 154 92 148 L170 136 Q206 84 272 76 L404 76 Q458 80 492 130 L564 144 Q598 152 602 184 L604 216 Z" fill="url(#cNavy)"/>
+      <!-- black roof -->
+      <path d="M186 130 Q210 84 272 76 L404 76 Q450 80 478 118 L470 122 Q444 92 404 88 L272 88 Q226 94 198 132 Z" fill="url(#cRoof)"/>
+      <!-- windows -->
+      <path d="M196 128 Q218 96 272 90 L334 90 L334 128 Z" fill="url(#cGlass)"/>
+      <path d="M348 90 L402 90 Q436 96 462 128 L348 128 Z" fill="url(#cGlass)"/>
+      <path d="M334 90 L348 90 L348 128 L334 128 Z" fill="#050506"/>
+      <!-- body shine line & door cut -->
+      <path d="M70 168 Q320 150 590 170" fill="none" stroke="#6f8cf0" stroke-opacity=".5" stroke-width="2"/>
+      <path d="M341 130 L341 204" stroke="#050a1f" stroke-width="2" opacity=".8"/>
+      <rect x="318" y="146" width="16" height="4" rx="2" fill="#050506"/>
+      <rect x="362" y="146" width="16" height="4" rx="2" fill="#050506"/>
+      <!-- black lower cladding -->
+      <path d="M44 198 L604 198 L604 218 L44 218 Z" fill="#08080a"/>
+      <!-- lights -->
+      <path d="M566 152 L598 160 L598 174 L560 170 Z" fill="#e9f2ff"/>
+      <path d="M84 162 L58 166 L56 180 L88 176 Z" fill="#ff4a4a"/>
+      <!-- black grille -->
+      <rect x="486" y="170" width="76" height="18" rx="4" fill="#050506"/>
+      <!-- wheels -->
+      <circle cx="172" cy="216" r="56" fill="#030304"/>
+      <circle cx="476" cy="216" r="56" fill="#030304"/>
+      <g fill="#0a0a0c" stroke="#8b94b8" stroke-width="3"><circle cx="172" cy="216" r="38"/><circle cx="476" cy="216" r="38"/></g>
+      <g stroke="#8b94b8" stroke-width="5" stroke-linecap="round">
+        <path d="M172 192 L172 240 M148 216 L196 216 M155 199 L189 233 M189 199 L155 233"/>
+        <path d="M476 192 L476 240 M452 216 L500 216 M459 199 L493 233 M493 199 L459 233"/>
+      </g>
+      <circle cx="172" cy="216" r="8" fill="#d4af37"/><circle cx="476" cy="216" r="8" fill="#d4af37"/>
+    </svg>
+    <img id="carPhoto" src="xuv-3xo.jpg" alt="XUV 3XO" onerror="this.remove()">
+  </div>
+
+  <div class="card">
+    <h2>Time left · 31 Dec 2027</h2>
+    <div class="cd">
+      <div><b id="cdD">0</b><span>Days</span></div>
+      <div><b id="cdH">0</b><span>Hrs</span></div>
+      <div><b id="cdM">0</b><span>Min</span></div>
+      <div><b id="cdS">0</b><span>Sec</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Saved so far</h2>
+    <div class="big"><span id="saved">₹0</span> <small>of <span id="target">₹4,61,000</span></small></div>
+    <div class="bar"><i id="bar"></i></div>
+    <div class="row"><span><b id="pct">0%</b> done</span><span>Remaining <b id="remain">₹0</b></span></div>
+    <div class="badge" id="badge">🏆 DOWN PAYMENT TARGET REACHED!</div>
+  </div>
+
+  <div class="card">
+    <h2>Today · <span id="today"></span></h2>
+    <p class="msg" id="msg"></p>
+    <button class="full" id="checkin">Daily check-in</button>
+    <div class="row" style="margin-top:10px"><span>Check-ins: <b id="ciTotal">0</b></span><span>Streak: <b id="ciStreak">0</b></span><span>Today's deposit: <b id="todayDep">₹0</b> / <b id="dTarget">₹900</b></span></div>
+    <div class="dep">
+      <input id="depAmt" type="number" inputmode="numeric" value="900" min="1" aria-label="Amount">
+      <input id="depNote" type="text" placeholder="Note (optional)" aria-label="Note">
+      <button id="depBtn">Deposit</button>
+    </div>
+    <p class="hint">Check-in only records that you showed up. Savings go up only when you confirm a deposit, tick a month, or mark arrears/bonus received.</p>
+    <ul id="depList" style="margin-top:8px"></ul>
+  </div>
+
+  <div class="card">
+    <h2>Monthly savings · <span id="mDone">0</span> done, <span id="mLeft">13</span> left</h2>
+    <div id="months"></div>
+  </div>
+
+  <div class="card">
+    <h2>Arrears &amp; bonus</h2>
+    <div class="x"><div>Appraisal arrears<small id="arrSt"></small></div><input type="number" inputmode="numeric" id="arrAmt" min="0" aria-label="Arrears amount"></div>
+    <button class="full" id="arrBtn">Mark as received</button>
+    <div class="x" style="margin-top:6px"><div>Diwali bonus<small id="bonSt"></small></div><input type="number" inputmode="numeric" id="bonAmt" min="0" aria-label="Bonus amount"></div>
+    <button class="full" id="bonBtn">Mark as received</button>
+  </div>
+
+  <div class="card">
+    <h2>Savings record (Excel sheet)</h2>
+    <div class="tw">
+      <table class="tbl">
+        <thead><tr><th>#</th><th>Entry</th><th>Date</th><th class="r">Amount</th><th></th></tr></thead>
+        <tbody id="recBody"></tbody>
+        <tfoot><tr><td colspan="3">Total saved</td><td class="r" id="recTotal">₹0</td><td></td></tr></tfoot>
+      </table>
+    </div>
+    <p class="hint">Every ticked month, deposit, arrears and bonus is saved here automatically. Tap Delete to remove an entry (a month gets un-ticked).</p>
+    <button class="full" id="xls" style="margin-top:10px">Download Excel file</button>
+  </div>
+
+  <div class="card">
+    <h2>Backup</h2>
+    <div class="tools">
+      <button id="exp">Export</button>
+      <button class="ghost" id="imp">Import</button>
+      <button class="ghost" id="rst">Reset</button>
+    </div>
+    <input type="file" id="file" accept=".json,application/json" hidden>
+    <p class="hint">Data is saved in this browser only. Export a backup now and then.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+var KEY='project-xuv-2027-v1';
+var END=new Date(2027,11,31,23,59,59);
+var MONTHS=['December 2026','January 2027','February 2027','March 2027','April 2027','May 2027','June 2027','July 2027','August 2027','September 2027','October 2027','November 2027','December 2027'];
+var QUOTES=['Discipline today. Freedom tomorrow.','Every ₹27,000 takes you closer to your dream car.','13 MONTHS. ONE DREAM. ONE NEW DRIVE.','Small deposits, big destination.','Pay yourself first. Always.','Consistency beats intensity. Show up.','Progress, not perfection.'];
+
+function defaults(){return{
+  monthly:MONTHS.map(function(l){return{label:l,amount:27000,done:false,doneOn:null}}),
+  arrears:{expected:60000,received:false,receivedOn:null},
+  bonus:{expected:55000,received:false,receivedOn:null},
+  target:461000,dailyTarget:900,checkins:{},deposits:[]};}
+
+function $(id){return document.getElementById(id)}
+function pad(n){return n<10?'0'+n:''+n}
+function iso(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
+function inr(n){return '₹'+Math.round(n||0).toLocaleString('en-IN')}
+function num(v){var n=parseFloat(v);return isFinite(n)?n:0}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function sum(a){return a.reduce(function(x,y){return x+num(y)},0)}
+
+function normalize(src){
+  var s=Object.assign(defaults(),src||{});   // unknown keys from older backups are kept
+  var d=defaults();
+  if(!Array.isArray(s.monthly)||s.monthly.length!==13)s.monthly=d.monthly;
+  s.monthly.forEach(function(m,i){m.label=MONTHS[i];m.amount=num(m.amount);m.done=!!m.done});
+  s.arrears=Object.assign(d.arrears,s.arrears);s.bonus=Object.assign(d.bonus,s.bonus);
+  if(!Array.isArray(s.deposits))s.deposits=[];
+  if(!s.checkins||typeof s.checkins!=='object')s.checkins={};
+  s.target=num(s.target)||461000;s.dailyTarget=num(s.dailyTarget)||900;
+  return s;
+}
+var st;
+try{st=normalize(JSON.parse(localStorage.getItem(KEY)))}catch(e){st=defaults()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){alert('Could not save data (storage blocked or full).')}}
+
+function totals(){
+  var ms=sum(st.monthly.filter(function(m){return m.done}).map(function(m){return m.amount}));
+  var ar=st.arrears.received?num(st.arrears.expected):0, bo=st.bonus.received?num(st.bonus.expected):0;
+  var ex=sum(st.deposits.map(function(d){return d.amount}));
+  var saved=ms+ar+bo+ex;
+  return{saved:saved,pct:st.target>0?saved/st.target*100:0,remain:Math.max(0,st.target-saved)};
+}
+
+function renderMonths(){
+  var now=new Date().toLocaleString('en-US',{month:'long',year:'numeric'});
+  $('months').innerHTML=st.monthly.map(function(m,i){
+    return '<div class="m'+(m.done?' done':'')+'" data-i="'+i+'">'+
+      '<input type="checkbox" data-c="'+i+'"'+(m.done?' checked':'')+' aria-label="'+m.label+' saved">'+
+      '<div class="n">'+m.label+(m.label===now?' •':'')+'<small>'+(m.done&&m.doneOn?'Saved on '+m.doneOn:'Pending')+'</small></div>'+
+      '<input type="number" inputmode="numeric" min="0" data-a="'+i+'" value="'+m.amount+'" aria-label="'+m.label+' amount"></div>';
+  }).join('');
+}
+function renderDeps(){
+  var items=st.deposits.slice().sort(function(a,b){return b.id-a.id}).slice(0,6);
+  $('depList').innerHTML=items.length?items.map(function(d){
+    return '<li><span>'+esc(d.date)+(d.note?' · '+esc(d.note):'')+'</span><b>+'+inr(d.amount)+'</b><button data-del="'+d.id+'" aria-label="Delete">✕</button></li>';
+  }).join(''):'<li style="color:var(--mut)">No extra deposits yet</li>';
+}
+
+function update(){
+  var t=totals(),now=new Date(),today=iso(now);
+  $('saved').textContent=inr(t.saved);$('target').textContent=inr(st.target);
+  $('bar').style.width=Math.min(100,t.pct)+'%';
+  $('pct').textContent=t.pct.toFixed(1)+'%';$('remain').textContent=inr(t.remain);
+  $('badge').style.display=(st.target>0&&t.saved>=st.target)?'block':'none';
+
+  $('today').textContent=now.toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+  var doy=Math.floor((now-new Date(now.getFullYear(),0,0))/864e5);
+  $('msg').textContent=QUOTES[doy%QUOTES.length];
+  var ck=!!st.checkins[today],b=$('checkin');
+  b.textContent=ck?'✔ Checked in today (tap to undo)':'Daily check-in';b.classList.toggle('done',ck);
+  var keys=Object.keys(st.checkins).filter(function(k){return st.checkins[k]});
+  $('ciTotal').textContent=keys.length;
+  var streak=0,c=new Date(now);if(!st.checkins[iso(c)])c.setDate(c.getDate()-1);
+  while(st.checkins[iso(c)]){streak++;c.setDate(c.getDate()-1)}
+  $('ciStreak').textContent=streak;
+  $('todayDep').textContent=inr(sum(st.deposits.filter(function(d){return d.date===today}).map(function(d){return d.amount})));
+  $('dTarget').textContent=inr(st.dailyTarget);
+
+  var done=st.monthly.filter(function(m){return m.done}).length;
+  $('mDone').textContent=done;$('mLeft').textContent=13-done;
+  [['arr','arrears'],['bon','bonus']].forEach(function(p){
+    var o=st[p[1]],btn=$(p[0]+'Btn');
+    btn.textContent=o.received?'✔ Received (tap to undo)':'Mark as received';btn.classList.toggle('done',o.received);
+    $(p[0]+'St').textContent=o.received?'Received'+(o.receivedOn?' on '+o.receivedOn:'')+' · counted':'Pending · not counted';
+  });
+  renderRecord();
+}
+function records(){
+  var r=[];
+  st.monthly.forEach(function(m,i){if(m.done)r.push({type:'m',key:i,name:m.label,date:m.doneOn||'',amount:m.amount,sort:m.doneOn||'0'})});
+  if(st.arrears.received)r.push({type:'a',name:'Appraisal arrears',date:st.arrears.receivedOn||'',amount:num(st.arrears.expected),sort:st.arrears.receivedOn||'0'});
+  if(st.bonus.received)r.push({type:'b',name:'Diwali bonus',date:st.bonus.receivedOn||'',amount:num(st.bonus.expected),sort:st.bonus.receivedOn||'0'});
+  st.deposits.forEach(function(d){r.push({type:'d',key:d.id,name:'Deposit'+(d.note?' – '+d.note:''),date:d.date,amount:num(d.amount),sort:d.date})});
+  r.sort(function(a,b){return a.sort<b.sort?-1:a.sort>b.sort?1:0});
+  return r;
+}
+function renderRecord(){
+  var r=records();
+  $('recBody').innerHTML=r.length?r.map(function(x,i){
+    return '<tr><td>'+(i+1)+'</td><td>'+esc(x.name)+'</td><td>'+esc(x.date||'-')+'</td><td class="r">'+inr(x.amount)+'</td>'+
+      '<td><button data-rt="'+x.type+'" data-rk="'+(x.key===undefined?'':x.key)+'">Delete</button></td></tr>';
+  }).join(''):'<tr><td colspan="5" style="color:var(--mut)">Nothing saved yet. Tick a month to add it here.</td></tr>';
+  $('recTotal').textContent=inr(sum(r.map(function(x){return x.amount})));
+}
+function tick(){
+  var d=Math.max(0,END-new Date());
+  $('cdD').textContent=Math.floor(d/864e5).toLocaleString('en-IN');
+  $('cdH').textContent=pad(Math.floor(d%864e5/36e5));
+  $('cdM').textContent=pad(Math.floor(d%36e5/6e4));
+  $('cdS').textContent=pad(Math.floor(d%6e4/1e3));
+}
+function fillInputs(){$('arrAmt').value=st.arrears.expected;$('bonAmt').value=st.bonus.expected}
+function full(){renderMonths();renderDeps();fillInputs();update();tick()}
+
+$('months').addEventListener('change',function(e){
+  var i=e.target.getAttribute('data-c');if(i===null)return;
+  var m=st.monthly[+i];m.done=e.target.checked;m.doneOn=m.done?iso(new Date()):null;
+  var row=e.target.closest('.m');row.classList.toggle('done',m.done);
+  row.querySelector('small').textContent=m.done?'Saved on '+m.doneOn:'Pending';
+  save();update();
+});
+$('months').addEventListener('input',function(e){
+  var i=e.target.getAttribute('data-a');if(i===null)return;
+  st.monthly[+i].amount=Math.max(0,num(e.target.value));save();update();
+});
+$('arrAmt').addEventListener('input',function(e){st.arrears.expected=Math.max(0,num(e.target.value));save();update()});
+$('bonAmt').addEventListener('input',function(e){st.bonus.expected=Math.max(0,num(e.target.value));save();update()});
+['arr','bon'].forEach(function(p){$(p+'Btn').addEventListener('click',function(){
+  var o=st[p==='arr'?'arrears':'bonus'];o.received=!o.received;o.receivedOn=o.received?iso(new Date()):null;save();update();
+})});
+$('checkin').addEventListener('click',function(){
+  var k=iso(new Date());if(st.checkins[k])delete st.checkins[k];else st.checkins[k]=true;save();update();
+});
+$('depBtn').addEventListener('click',function(){
+  var a=num($('depAmt').value);if(a<=0){alert('Enter an amount above 0');return}
+  st.deposits.push({id:Date.now(),date:iso(new Date()),amount:a,note:$('depNote').value.trim()});
+  $('depNote').value='';save();renderDeps();update();
+});
+$('depList').addEventListener('click',function(e){
+  var id=e.target.getAttribute('data-del');if(!id)return;
+  st.deposits=st.deposits.filter(function(d){return String(d.id)!==id});save();renderDeps();update();
+});
+$('recBody').addEventListener('click',function(e){
+  var t=e.target.getAttribute('data-rt');if(!t)return;
+  if(!confirm('Delete this entry?'))return;
+  var k=e.target.getAttribute('data-rk');
+  if(t==='m'){var m=st.monthly[+k];m.done=false;m.doneOn=null;renderMonths()}
+  else if(t==='a'){st.arrears.received=false;st.arrears.receivedOn=null}
+  else if(t==='b'){st.bonus.received=false;st.bonus.receivedOn=null}
+  else if(t==='d'){st.deposits=st.deposits.filter(function(d){return String(d.id)!==k});renderDeps()}
+  save();update();
+});
+$('xls').addEventListener('click',function(){
+  var rows=[['No','Entry','Date','Amount (INR)']];
+  records().forEach(function(x,i){rows.push([i+1,x.name,x.date,x.amount])});
+  rows.push(['','Total','',sum(records().map(function(x){return x.amount}))]);
+  var csv='﻿'+rows.map(function(r){return r.map(function(c){return '"'+String(c).replace(/"/g,'""')+'"'}).join(',')}).join('\r\n');
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download='xuv2027-savings-'+iso(new Date())+'.csv';document.body.appendChild(a);a.click();a.remove();
+});
+$('exp').addEventListener('click',function(){
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify({app:'project-xuv-2027',exportedAt:new Date().toISOString(),data:st},null,2)],{type:'application/json'}));
+  a.download='xuv2027-backup-'+iso(new Date())+'.json';document.body.appendChild(a);a.click();a.remove();
+});
+$('imp').addEventListener('click',function(){$('file').click()});
+$('file').addEventListener('change',function(e){
+  var f=e.target.files[0];if(!f)return;var r=new FileReader();
+  r.onload=function(){try{var j=JSON.parse(r.result),d=j&&j.data?j.data:j;if(!d||!Array.isArray(d.monthly))throw 0;st=normalize(d);save();full();alert('Backup restored')}catch(x){alert('Not a valid backup file')}e.target.value=''};
+  r.readAsText(f);
+});
+$('rst').addEventListener('click',function(){
+  if(confirm('Erase ALL data? Export a backup first if unsure.')){st=defaults();save();full()}
+});
+
+full();setInterval(tick,1000);
+document.addEventListener('visibilitychange',function(){if(!document.hidden)update()});
+})();
+</script>
+</body>
+</html>
